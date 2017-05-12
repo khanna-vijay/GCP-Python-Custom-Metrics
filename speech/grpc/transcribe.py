@@ -20,6 +20,7 @@ Example usage:
 """
 
 import argparse
+import time
 
 import google.auth
 import google.auth.transport.grpc
@@ -44,13 +45,15 @@ def make_channel(host, port):
         credentials, http_request, target)
 
 
-def main(input_uri, encoding, sample_rate, language_code='en-US'):
+def main(input_uri, encoding, sample_rate, language_code='ja-JP'):
     service = cloud_speech_pb2.SpeechStub(
+        #make_channel('jerjou-dev-speech.sandbox.googleapis.com', 443))
         make_channel('speech.googleapis.com', 443))
 
     # The method and parameters can be inferred from the proto from which the
     # grpc client lib was generated. See:
     # https://github.com/googleapis/googleapis/blob/master/google/cloud/speech/v1beta1/cloud_speech.proto
+    start = time.time()
     response = service.SyncRecognize(cloud_speech_pb2.SyncRecognizeRequest(
         config=cloud_speech_pb2.RecognitionConfig(
             # There are a bunch of config options you can specify. See
@@ -65,6 +68,7 @@ def main(input_uri, encoding, sample_rate, language_code='en-US'):
             uri=input_uri,
         )
     ), DEADLINE_SECS)
+    print('Time: %s' % (time.time() - start))
 
     # Print the recognition result alternatives and confidence scores.
     for result in response.results:
@@ -90,9 +94,10 @@ if __name__ == '__main__':
     parser.add_argument('input_uri', type=_gcs_uri)
     parser.add_argument(
         '--encoding', default='LINEAR16', choices=[
-            'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB'],
+            'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB', 'SPEEX_WITH_HEADER_BYTE'],
         help='How the audio file is encoded. See {}#L67'.format(PROTO_URL))
     parser.add_argument('--sample_rate', type=int, default=16000)
+    parser.add_argument('--lang', default='en-US')
 
     args = parser.parse_args()
-    main(args.input_uri, args.encoding, args.sample_rate)
+    main(args.input_uri, args.encoding, args.sample_rate, args.lang)

@@ -142,7 +142,7 @@ def request_stream(data_stream, rate, interim_results=True):
         sample_rate=rate,  # the rate in hertz
         # See http://g.co/cloud/speech/docs/languages
         # for a list of supported languages.
-        language_code='en-US',  # a BCP-47 language tag
+        language_code='ja-JP',  # a BCP-47 language tag
     )
     streaming_config = cloud_speech_pb2.StreamingRecognitionConfig(
         interim_results=interim_results,

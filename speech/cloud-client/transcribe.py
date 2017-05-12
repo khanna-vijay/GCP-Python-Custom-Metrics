@@ -24,6 +24,7 @@ Example usage:
 
 # [START import_libraries]
 import argparse
+import time
 import io
 # [END import_libraries]
 
@@ -41,9 +42,11 @@ def transcribe_file(speech_file):
             encoding='LINEAR16',
             sample_rate_hertz=16000)
 
-    alternatives = audio_sample.recognize('en-US')
+    start = time.time()
+    alternatives = audio_sample.recognize('ja-JP')
+    print('Runtime: %s' % (time.time() - start))
     for alternative in alternatives:
-        print('Transcript: {}'.format(alternative.transcript))
+        print(u'Transcript: {}'.format(alternative.transcript))
 
 
 def transcribe_gcs(gcs_uri):
