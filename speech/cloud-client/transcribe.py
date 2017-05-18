@@ -29,7 +29,7 @@ import io
 # [END import_libraries]
 
 
-def transcribe_file(speech_file):
+def transcribe_file(speech_file, encoding, sample_rate_hertz, language):
     """Transcribe the given audio file."""
     from google.cloud import speech
     speech_client = speech.Client()
@@ -38,18 +38,17 @@ def transcribe_file(speech_file):
         content = audio_file.read()
         audio_sample = speech_client.sample(
             content=content,
-            source_uri=None,
-            encoding='LINEAR16',
-            sample_rate_hertz=16000)
+            encoding=encoding,
+            sample_rate_hertz=sample_rate_hertz)
 
     start = time.time()
-    alternatives = audio_sample.recognize('ja-JP')
+    alternatives = audio_sample.recognize(language)
     print('Runtime: %s' % (time.time() - start))
     for alternative in alternatives:
         print(u'Transcript: {}'.format(alternative.transcript))
 
 
-def transcribe_gcs(gcs_uri):
+def transcribe_gcs(gcs_uri, encoding, sample_rate_hertz, language):
     """Transcribes the audio file specified by the gcs_uri."""
     from google.cloud import speech
     speech_client = speech.Client()
@@ -57,10 +56,10 @@ def transcribe_gcs(gcs_uri):
     audio_sample = speech_client.sample(
         content=None,
         source_uri=gcs_uri,
-        encoding='FLAC',
-        sample_rate_hertz=16000)
+        encoding=encoding,
+        sample_rate_hertz=sample_rate_hertz)
 
-    alternatives = audio_sample.recognize('en-US')
+    alternatives = audio_sample.recognize(language)
     for alternative in alternatives:
         print('Transcript: {}'.format(alternative.transcript))
 
@@ -71,8 +70,11 @@ if __name__ == '__main__':
         formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument(
         'path', help='File or GCS path for audio file to be recognized')
+    parser.add_argument('--encoding', default='LINEAR16')
+    parser.add_argument('--sample_rate', default=16000, type=int)
+    parser.add_argument('--language', default='en-US')
     args = parser.parse_args()
     if args.path.startswith('gs://'):
-        transcribe_gcs(args.path)
+        transcribe_gcs(args.path, args.encoding, args.sample_rate, args.language)
     else:
-        transcribe_file(args.path)
+        transcribe_file(args.path, args.encoding, args.sample_rate, args.language)
