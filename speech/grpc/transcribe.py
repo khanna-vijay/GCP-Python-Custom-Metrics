@@ -25,7 +25,7 @@ import time
 import google.auth
 import google.auth.transport.grpc
 import google.auth.transport.requests
-from google.cloud.proto.speech.v1beta1 import cloud_speech_pb2
+from google.cloud.proto.speech.v1 import cloud_speech_pb2
 
 # Keep the request alive for this many seconds
 DEADLINE_SECS = 60
@@ -47,19 +47,19 @@ def make_channel(host, port):
 
 def main(input_uri, encoding, sample_rate, language_code='ja-JP'):
     service = cloud_speech_pb2.SpeechStub(
-        #make_channel('jerjou-dev-speech.sandbox.googleapis.com', 443))
-        make_channel('speech.googleapis.com', 443))
+        make_channel('jerjou-dev-speech.sandbox.googleapis.com', 443))
+        #make_channel('speech.googleapis.com', 443))
 
     # The method and parameters can be inferred from the proto from which the
     # grpc client lib was generated. See:
-    # https://github.com/googleapis/googleapis/blob/master/google/cloud/speech/v1beta1/cloud_speech.proto
+    # https://github.com/googleapis/googleapis/blob/master/google/cloud/speech/v1/cloud_speech.proto
     start = time.time()
-    response = service.SyncRecognize(cloud_speech_pb2.SyncRecognizeRequest(
+    response = service.Recognize(cloud_speech_pb2.RecognizeRequest(
         config=cloud_speech_pb2.RecognitionConfig(
             # There are a bunch of config options you can specify. See
             # https://goo.gl/KPZn97 for the full list.
             encoding=encoding,  # one of LINEAR16, FLAC, MULAW, AMR, AMR_WB
-            sample_rate=sample_rate,  # the rate in hertz
+            sample_rate_hertz=sample_rate,  # the rate in hertz
             # See https://g.co/cloud/speech/docs/languages for a list of
             # supported languages.
             language_code=language_code,  # a BCP-47 language tag
@@ -86,7 +86,7 @@ def _gcs_uri(text):
 
 
 PROTO_URL = ('https://github.com/googleapis/googleapis/blob/master/'
-             'google/cloud/speech/v1beta1/cloud_speech.proto')
+             'google/cloud/speech/v1/cloud_speech.proto')
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__,

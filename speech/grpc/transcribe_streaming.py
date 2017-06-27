@@ -26,7 +26,7 @@ import sys
 import google.auth
 import google.auth.transport.grpc
 import google.auth.transport.requests
-from google.cloud.proto.speech.v1beta1 import cloud_speech_pb2
+from google.cloud.proto.speech.v1 import cloud_speech_pb2
 from google.rpc import code_pb2
 import grpc
 import pyaudio
@@ -139,7 +139,7 @@ def request_stream(data_stream, rate, interim_results=True):
         # There are a bunch of config options you can specify. See
         # https://goo.gl/KPZn97 for the full list.
         encoding='LINEAR16',  # raw 16-bit signed LE samples
-        sample_rate=rate,  # the rate in hertz
+        sample_rate_hertz=rate,  # the rate in hertz
         # See http://g.co/cloud/speech/docs/languages
         # for a list of supported languages.
         language_code='ja-JP',  # a BCP-47 language tag
@@ -207,7 +207,8 @@ def listen_print_loop(recognize_stream):
 
 def main():
     service = cloud_speech_pb2.SpeechStub(
-        make_channel('speech.googleapis.com', 443))
+        make_channel('jerjou-dev-speech.sandbox.googleapis.com', 443))
+        #make_channel('speech.googleapis.com', 443))
 
     # For streaming audio from the microphone, there are three threads.
     # First, a thread that collects audio data as it comes in

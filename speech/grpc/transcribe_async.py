@@ -28,7 +28,7 @@ import time
 import google.auth
 import google.auth.transport.grpc
 import google.auth.transport.requests
-from google.cloud.proto.speech.v1beta1 import cloud_speech_pb2
+from google.cloud.proto.speech.v1 import cloud_speech_pb2
 from google.longrunning import operations_pb2
 
 # Keep the request alive for this many seconds
@@ -49,19 +49,19 @@ def make_channel(host, port):
         credentials, http_request, target)
 
 
-def main(input_uri, encoding, sample_rate, language_code='en-US'):
-    channel = make_channel('speech.googleapis.com', 443)
+def main(input_uri, encoding, sample_rate, language_code='ja-JP'):
+    channel = make_channel('jerjou-dev-speech.sandbox.googleapis.com', 443)
     service = cloud_speech_pb2.SpeechStub(channel)
 
     # The method and parameters can be inferred from the proto from which the
     # grpc client lib was generated. See:
-    # https://github.com/googleapis/googleapis/blob/master/google/cloud/speech/v1beta1/cloud_speech.proto
-    operation = service.AsyncRecognize(cloud_speech_pb2.AsyncRecognizeRequest(
+    # https://github.com/googleapis/googleapis/blob/master/google/cloud/speech/v1/cloud_speech.proto
+    operation = service.LongRunningRecognize(cloud_speech_pb2.LongRunningRecognizeRequest(
         config=cloud_speech_pb2.RecognitionConfig(
             # There are a bunch of config options you can specify. See
             # https://goo.gl/KPZn97 for the full list.
             encoding=encoding,  # one of LINEAR16, FLAC, MULAW, AMR, AMR_WB
-            sample_rate=sample_rate,  # the rate in hertz
+            sample_rate_hertz=sample_rate,  # the rate in hertz
             # See https://g.co/cloud/speech/docs/languages for a list of
             # supported languages.
             language_code=language_code,  # a BCP-47 language tag
@@ -93,7 +93,7 @@ def main(input_uri, encoding, sample_rate, language_code='en-US'):
         if operation.done:
             break
 
-    response = cloud_speech_pb2.AsyncRecognizeResponse()
+    response = cloud_speech_pb2.LongRunningRecognizeResponse()
     operation.response.Unpack(response)
     # Print the recognition result alternatives and confidence scores.
     for result in response.results:
@@ -120,7 +120,7 @@ if __name__ == '__main__':
             'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB'],
         help='How the audio file is encoded. See {}#L67'.format(
             'https://github.com/googleapis/googleapis/blob/master/'
-            'google/cloud/speech/v1beta1/cloud_speech.proto'))
+            'google/cloud/speech/v1/cloud_speech.proto'))
     parser.add_argument('--sample_rate', type=int, default=16000)
 
     args = parser.parse_args()
