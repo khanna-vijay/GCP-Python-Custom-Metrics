@@ -54,6 +54,11 @@ def main(input_uri, encoding, sample_rate, language_code='ja-JP'):
     # grpc client lib was generated. See:
     # https://github.com/googleapis/googleapis/blob/master/google/cloud/speech/v1/cloud_speech.proto
     start = time.time()
+    if input_uri.startswith('gs://'):
+        audio = cloud_speech_pb2.RecognitionAudio(uri=input_uri)
+    else:
+        with open(input_uri, 'rb') as f:
+            audio = cloud_speech_pb2.RecognitionAudio(content=f.read())
     response = service.Recognize(cloud_speech_pb2.RecognizeRequest(
         config=cloud_speech_pb2.RecognitionConfig(
             # There are a bunch of config options you can specify. See
@@ -64,11 +69,10 @@ def main(input_uri, encoding, sample_rate, language_code='ja-JP'):
             # supported languages.
             language_code=language_code,  # a BCP-47 language tag
         ),
-        audio=cloud_speech_pb2.RecognitionAudio(
-            uri=input_uri,
-        )
+        audio=audio
     ), DEADLINE_SECS)
     print('Time: %s' % (time.time() - start))
+    print(response)
 
     # Print the recognition result alternatives and confidence scores.
     for result in response.results:
@@ -91,13 +95,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description=__doc__,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('input_uri', type=_gcs_uri)
+    parser.add_argument('filename')
     parser.add_argument(
         '--encoding', default='LINEAR16', choices=[
-            'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB', 'SPEEX_WITH_HEADER_BYTE'],
+            'LINEAR16', 'FLAC', 'MULAW', 'AMR', 'AMR_WB', 'SPEEX_WITH_HEADER_BYTE', 'OGG_OPUS'],
         help='How the audio file is encoded. See {}#L67'.format(PROTO_URL))
     parser.add_argument('--sample_rate', type=int, default=16000)
     parser.add_argument('--lang', default='en-US')
 
     args = parser.parse_args()
-    main(args.input_uri, args.encoding, args.sample_rate, args.lang)
+    main(args.filename, args.encoding, args.sample_rate, args.lang)
