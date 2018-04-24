@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# [START classify_text_tutorial]
 """Using the classify_text method to find content categories of text files,
 Then use the content category labels to compare text similarity.
 
@@ -21,7 +20,7 @@ For more information, see the tutorial page at
 https://cloud.google.com/natural-language/docs/classify-text-tutorial.
 """
 
-# [START classify_text_tutorial_import]
+# [START language_classify_text_tutorial_import]
 import argparse
 import io
 import json
@@ -30,10 +29,10 @@ import os
 from google.cloud import language
 import numpy
 import six
-# [END classify_text_tutorial_import]
+# [END language_classify_text_tutorial_import]
 
 
-# [START def_classify]
+# [START language_classify_text_tutorial_classify]
 def classify(text, verbose=True):
     """Classify the input text into categories. """
 
@@ -61,10 +60,10 @@ def classify(text, verbose=True):
             print(u'{:<16}: {}'.format('confidence', category.confidence))
 
     return result
-# [END def_classify]
+# [END language_classify_text_tutorial_classify]
 
 
-# [START def_index]
+# [START language_classify_text_tutorial_index]
 def index(path, index_file):
     """Classify each text file in a directory and write
     the results to the index_file.
@@ -91,7 +90,7 @@ def index(path, index_file):
 
     print('Texts indexed in file: {}'.format(index_file))
     return result
-# [END def_index]
+# [END language_classify_text_tutorial_index]
 
 
 # [START def_split_labels]
@@ -146,7 +145,7 @@ def similarity(categories1, categories2):
 # [END def_similarity]
 
 
-# [START def_query]
+# [START language_classify_text_tutorial_query]
 def query(index_file, text, n_top=3):
     """Find the indexed files that are the most similar to
     the query text.
@@ -176,10 +175,10 @@ def query(index_file, text, n_top=3):
         print('\n')
 
     return similarities
-# [END def_query]
+# [END language_classify_text_tutorial_query]
 
 
-# [START def_query_category]
+# [START language_classify_text_tutorial_query_category]
 def query_category(index_file, category_string, n_top=3):
     """Find the indexed files that are the most similar to
     the query label.
@@ -211,7 +210,7 @@ def query_category(index_file, category_string, n_top=3):
         print('\n')
 
     return similarities
-# [END def_query_category]
+# [END language_classify_text_tutorial_query_category]
 
 
 if __name__ == '__main__':
@@ -255,4 +254,3 @@ if __name__ == '__main__':
         query(args.index_file, args.text)
     if args.command == 'query-category':
         query_category(args.index_file, args.category)
-# [END classify_text_tutorial]
